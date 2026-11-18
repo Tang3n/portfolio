@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Štěpán Mészáros – 3D portfolio</title>
+    <meta name="description" content="Interactive 3D version of Štěpán Mészáros's portfolio: sail a small boat around a fjord and visit islands with the CV sections.">
+    <link rel="canonical" href="https://tang3n.github.io/portfolio/world/">
+    <link rel="alternate" hreflang="en" href="https://tang3n.github.io/portfolio/world/">
+    <link rel="alternate" hreflang="cs" href="https://tang3n.github.io/portfolio/world/?lang=cs">
+    <link rel="alternate" hreflang="x-default" href="https://tang3n.github.io/portfolio/world/">
+    <!-- Náhled při sdílení odkazu (LinkedIn, Slack, …) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Štěpán Mészáros">
+    <meta property="og:title" content="Štěpán Mészáros – 3D portfolio">
+    <meta property="og:description" content="Sail a small boat around a Norwegian fjord. Each island is one part of my CV.">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="cs_CZ">
+    <meta property="og:url" content="https://tang3n.github.io/portfolio/world/">
+    <meta property="og:image" content="https://tang3n.github.io/portfolio/world/og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="A small fishing boat in a low-poly fjord with a lighthouse island">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#f3cfa6">
+    <link rel="preload" href="../fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../fonts/inter-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="world.css">
+    <!-- Import mapa: holý název "three" → lokální soubor. Díky ní náš kód i
+         stažené doplňky (postprocessing) sdílejí jednu instanci knihovny. -->
+    <script type="importmap">
+        { "imports": { "three": "./vendor/three.module.min.js" } }
+    </script>
+    <!-- Prohlížeč jinak zjišťuje moduly postupně (stáhne main.js, přečte jeho
+         importy, stáhne je, …). Takhle je začne stahovat všechny najednou. -->
+    <link rel="modulepreload" href="vendor/three.module.min.js">
+    <link rel="modulepreload" href="js/main.js">
+    <link rel="modulepreload" href="js/models.js">
+    <link rel="modulepreload" href="js/world.js">
+    <link rel="modulepreload" href="js/water.js">
+    <link rel="modulepreload" href="js/ripples.js">
+    <link rel="modulepreload" href="js/boat.js">
+    <link rel="modulepreload" href="js/floaters.js">
+    <link rel="modulepreload" href="js/sky.js">
+    <link rel="modulepreload" href="js/input.js">
+    <link rel="modulepreload" href="js/content.js">
+</head>
+
+<body>
+    <canvas id="scene" tabindex="0" aria-label="3D fjord scene" aria-describedby="scene-help"></canvas>
+    <p id="scene-help" class="sr-only"></p>
+
+    <header class="hud">
+        <div class="brand">
+            <strong>Štěpán Mészáros</strong>
+            <span id="role">Backend developer</span>
+        </div>
+        <nav id="nav" class="nav" aria-label="Sections"></nav>
+        <div class="meta">
+            <span id="progress" class="progress" role="status"></span>
+            <button id="quality" class="chip" type="button"></button>
+            <a data-classic href="../">Classic version</a>
+            <a id="lang" href="?lang=cs">CS</a>
+        </div>
+    </header>
+
+    <aside id="panel" class="panel" aria-labelledby="panel-title" inert>
+        <header>
+            <div>
+                <span id="panel-index" class="index"></span>
+                <h2 id="panel-title" tabindex="-1"></h2>
+            </div>
+            <div class="panel-actions">
+                <button id="panel-prev" type="button">‹</button>
+                <button id="panel-next" type="button">›</button>
+                <button id="panel-close" type="button" aria-label="Close">×</button>
+            </div>
+        </header>
+        <div id="panel-body" class="panel-body"></div>
+    </aside>
+
+    <!-- Přístroje: minimapa, rychlost, kompas -->
+    <div class="instruments" aria-hidden="true">
+        <canvas id="minimap" class="minimap"></canvas>
+        <div class="gauges">
+            <div class="gauge"><b id="speed">0</b><small id="unit">kn</small></div>
+            <div class="gauge"><i id="needle" class="needle"></i><small id="heading">N</small></div>
+        </div>
+    </div>
+
+    <!-- Šipka k vybranému ostrovu -->
+    <div id="waypoint" class="waypoint" hidden>
+        <i id="waypoint-arrow" class="needle"></i>
+        <span id="waypoint-text"></span>
+    </div>
+
+    <!-- Kontextová nápověda dole uprostřed -->
+    <div id="prompt" class="prompt" role="status"></div>
+    <div id="toast" class="toast" hidden></div>
+    <div id="stick" class="stick" hidden><i></i></div>
+
+    <div class="intro" id="intro">
+        <div class="card">
+            <p class="eyebrow" id="intro-role"></p>
+            <h1>Štěpán Mészáros</h1>
+            <p id="intro-lede"></p>
+            <div class="keys" aria-hidden="true">
+                <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <em id="intro-sail"></em></span>
+                <span><kbd>R</kbd> <em id="intro-reset"></em></span>
+            </div>
+            <div class="load" aria-hidden="true"><i id="load-bar"></i></div>
+            <button id="start" type="button">Start sailing</button>
+            <a data-classic class="quiet" href="../">Classic version</a>
+        </div>
+    </div>
+
+    <noscript>
+        <p class="noscript">This page needs JavaScript. <a href="../">Open the classic version</a>.</p>
+    </noscript>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

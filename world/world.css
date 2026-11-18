@@ -1,0 +1,751 @@
+/* Fonty sdílené s klasickou verzí (../fonts) */
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("../fonts/inter-latin-ext-wght-normal.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+    --ink: #f4f4f5;
+    --muted: #a9b4c0;
+    --glass: rgb(13 24 34 / 0.62);
+    --glass-strong: rgb(13 24 34 / 0.8);
+    --line: rgb(255 255 255 / 0.12);
+    --accent: #7c3aed;
+    --accent-soft: #c4b5fd;
+    --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --gap: 1rem;
+    --radius: 1rem;
+    --shadow: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 12px 40px rgb(0 0 0 / 0.28);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: #f3cfa6;
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--accent-soft);
+    text-underline-offset: 0.18em;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-soft);
+    outline-offset: 2px;
+}
+
+kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.7em;
+    height: 1.7em;
+    padding: 0 0.35em;
+    margin-right: 0.2em;
+    border-radius: 0.4em;
+    border: 1px solid rgb(255 255 255 / 0.28);
+    border-bottom-width: 3px;
+    background: rgb(255 255 255 / 0.1);
+    font: 600 0.8em var(--font);
+}
+
+/* jen pro čtečky obrazovky */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+#scene {
+    opacity: 0;
+    transition: opacity 0.8s;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    outline: none;
+    touch-action: none; /* táhnutí řídí loď, ne scroll/zoom stránky */
+    cursor: grab;
+}
+
+.ready #scene {
+    opacity: 1;
+}
+
+/* Společný vzhled „skla“ pro všechny prvky HUD */
+.hud > *,
+.panel,
+.gauges,
+.minimap,
+.waypoint,
+.prompt,
+.toast,
+.card {
+    background: var(--glass);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(14px) saturate(1.3);
+}
+
+/* Horní lišta -------------------------------------------------------------- */
+.hud {
+    position: fixed;
+    inset: var(--gap) var(--gap) auto var(--gap);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    pointer-events: none; /* průhledné pro táhnutí; klikací jsou jen potomci */
+    opacity: 0;
+    transform: translateY(-0.75rem);
+    transition: opacity 0.5s, transform 0.5s var(--ease);
+}
+
+.started .hud {
+    opacity: 1;
+    transform: none;
+}
+
+.hud > * {
+    pointer-events: auto;
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+}
+
+.brand {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-size: 0.9375rem;
+}
+
+.brand span {
+    color: var(--muted);
+    font-size: 0.8125rem;
+}
+
+.nav {
+    display: flex;
+    gap: 0.15rem;
+    padding: 0.25rem;
+}
+
+.nav button {
+    position: relative;
+    font-size: 0.875rem;
+    border: 0;
+    background: none;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.nav button:hover {
+    background: rgb(255 255 255 / 0.1);
+}
+
+.nav button[aria-current="true"] {
+    background: var(--accent);
+}
+
+/* navštívený ostrov: zelená tečka */
+.nav button.visited::after {
+    content: "";
+    position: absolute;
+    top: 0.2rem;
+    right: 0.3rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: #8fe08a;
+}
+
+.meta {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    font-size: 0.8125rem;
+}
+
+.progress {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+}
+
+.progress::before {
+    content: "⚓ ";
+}
+
+.chip {
+    border: 1px solid var(--line);
+    background: rgb(255 255 255 / 0.06);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    cursor: pointer;
+}
+
+.chip:hover {
+    background: rgb(255 255 255 / 0.14);
+}
+
+/* Panel sekce ------------------------------------------------------------- */
+.panel {
+    position: fixed;
+    top: 5rem;
+    right: var(--gap);
+    max-height: calc(100vh - 5rem - var(--gap));
+    width: min(27rem, calc(100vw - 2 * var(--gap)));
+    display: flex;
+    flex-direction: column;
+    background: var(--glass-strong);
+    border-radius: var(--radius);
+    transform: translateX(calc(100% + 2rem));
+    visibility: hidden;
+    transition: transform 0.5s var(--ease), visibility 0s 0.5s;
+}
+
+.panel.open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.5s var(--ease);
+}
+
+.panel > header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem 0.85rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.index {
+    display: block;
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    color: var(--accent-soft);
+    font-variant-numeric: tabular-nums;
+}
+
+.panel h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.panel-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.panel-actions button {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: none;
+    font-size: 1.15rem;
+    line-height: 1;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.panel-actions button:hover {
+    background: rgb(255 255 255 / 0.12);
+    color: var(--ink);
+}
+
+.panel-body {
+    padding: 1rem 1.25rem 1.5rem;
+    overflow-y: auto;
+    font-size: 0.9375rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.25) transparent;
+}
+
+.panel-body p {
+    margin: 0 0 0.85rem;
+}
+
+.entry {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.entry:last-child {
+    border-bottom: 0;
+}
+
+.entry header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+}
+
+.entry h3 {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.entry .when {
+    flex: none;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.entry .where,
+.entry p {
+    margin: 0.2rem 0 0;
+    color: var(--muted);
+}
+
+h3.sub,
+.skills dt {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-soft);
+}
+
+h3.sub {
+    margin: 1.25rem 0 0;
+}
+
+.skills {
+    margin: 0;
+}
+
+.skills dt {
+    margin-top: 1rem;
+}
+
+.skills dt:first-child {
+    margin-top: 0;
+}
+
+.skills dd {
+    margin: 0.2rem 0 0;
+}
+
+/* Přístroje: minimapa + rychlost + kompas ----------------------------------- */
+.instruments {
+    position: fixed;
+    left: var(--gap);
+    bottom: var(--gap);
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s 0.2s;
+}
+
+.started .instruments {
+    opacity: 1;
+}
+
+.minimap {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+}
+
+.gauges {
+    display: flex;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.gauge {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 0.1rem;
+    width: 4.25rem;
+    height: 4.25rem;
+}
+
+.gauge + .gauge {
+    border-left: 1px solid var(--line);
+}
+
+.gauge b {
+    font-size: 1.5rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.gauge small {
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* šipka kreslená okraji: trojúhelník mířící nahoru, otáčí se přes transform */
+.needle {
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 0.45rem solid transparent;
+    border-right: 0.45rem solid transparent;
+    border-bottom: 1.2rem solid var(--accent-soft);
+    transition: transform 0.15s linear;
+}
+
+.waypoint {
+    position: fixed;
+    left: 50%;
+    top: 5rem;
+    translate: -50% 0;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.45rem 1rem 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+}
+
+.waypoint[hidden],
+.toast[hidden] {
+    display: none;
+}
+
+/* Nápověda a toast ----------------------------------------------------------- */
+.prompt {
+    position: fixed;
+    left: 50%;
+    bottom: var(--gap);
+    translate: -50% 1rem;
+    max-width: min(34rem, calc(100vw - 2 * var(--gap)));
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s, translate 0.35s var(--ease);
+}
+
+.prompt.show {
+    opacity: 1;
+    translate: -50% 0;
+}
+
+.prompt b {
+    margin-right: 0.35rem;
+    color: var(--accent-soft);
+}
+
+.prompt .sep {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    margin: 0 0.6rem;
+    vertical-align: -0.15em;
+    background: var(--line);
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 4.5rem;
+    translate: -50% 0;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.7rem 0.8rem 0.7rem 1.2rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    animation: rise 0.45s var(--ease);
+}
+
+.toast button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    background: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        translate: -50% 1rem;
+    }
+}
+
+.stick {
+    position: fixed;
+    width: 140px;
+    height: 140px;
+    margin: -70px 0 0 -70px;
+    border-radius: 50%;
+    border: 2px solid rgb(255 255 255 / 0.6);
+    background: rgb(255 255 255 / 0.12);
+    pointer-events: none;
+}
+
+.stick i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.85);
+    transform: translate(var(--dx, 0), var(--dy, 0));
+}
+
+/* Úvodní karta ------------------------------------------------------------- */
+.intro {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: var(--gap);
+    background: radial-gradient(circle at 50% 40%, rgb(13 24 34 / 0.15), rgb(13 24 34 / 0.6));
+    transition: opacity 0.6s, visibility 0s 0.6s;
+}
+
+.started .intro {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.card {
+    width: min(27rem, 100%);
+    padding: 2.25rem 2rem 1.75rem;
+    text-align: center;
+    background: var(--glass-strong);
+    border-radius: 1.5rem;
+    animation: rise-card 0.7s var(--ease);
+}
+
+@keyframes rise-card {
+    from {
+        opacity: 0;
+        transform: translateY(1rem) scale(0.98);
+    }
+}
+
+.eyebrow {
+    margin: 0 0 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+}
+
+.card h1 {
+    margin: 0 0 0.6rem;
+    font-size: 2rem;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+}
+
+.card p {
+    margin: 0 0 1.25rem;
+    color: var(--muted);
+}
+
+.keys {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.keys em {
+    font-style: normal;
+    margin-left: 0.15rem;
+}
+
+.load {
+    height: 3px;
+    margin-bottom: 1rem;
+    border-radius: 3px;
+    background: rgb(255 255 255 / 0.12);
+    overflow: hidden;
+    transition: opacity 0.4s 0.3s;
+}
+
+.load i {
+    display: block;
+    height: 100%;
+    background: var(--accent-soft);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease);
+}
+
+.ready .load {
+    opacity: 0;
+}
+
+#start:disabled {
+    opacity: 0.55;
+    cursor: progress;
+}
+
+.panel h2:focus {
+    outline: none; /* fokus sem dáváme programově, rámeček by jen mátl */
+}
+
+/* dotyk: větší plochy tlačítek */
+@media (pointer: coarse) {
+    .panel-actions button {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+
+    .nav button {
+        padding: 0.55rem 0.9rem;
+    }
+}
+
+#start {
+    display: block;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.2s var(--ease);
+}
+
+#start:hover:enabled {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.quiet {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.noscript {
+    position: fixed;
+    inset: auto 0 0 0;
+    margin: 0;
+    padding: 1rem;
+    text-align: center;
+    background: var(--glass-strong);
+}
+
+/* Mobil: panel jako spodní list, navigace se posouvá vodorovně ---------------- */
+@media (max-width: 760px) {
+    .brand span,
+    .progress,
+    .keys,
+    .gauge + .gauge {
+        display: none;
+    }
+
+    .nav {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .nav button {
+        flex: none;
+    }
+
+    .minimap {
+        width: 92px;
+        height: 92px;
+    }
+
+    .waypoint {
+        top: 7.75rem;
+    }
+
+    .prompt {
+        bottom: 7.5rem;
+    }
+
+    .panel {
+        top: auto;
+        bottom: var(--gap);
+        left: var(--gap);
+        right: var(--gap);
+        width: auto;
+        max-height: 52vh;
+        transform: translateY(calc(100% + 2rem));
+    }
+}
+
+/* myš: nápověda k táhnutí je jen pro dotyk */
+@media (hover: hover) {
+    .prompt .touch {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .panel,
+    .intro,
+    .hud,
+    .prompt,
+    .needle,
+    #scene {
+        transition: none;
+    }
+
+    .card,
+    .toast {
+        animation: none;
+    }
+}
