@@ -24,7 +24,10 @@
     <link rel="alternate" hreflang="cs" href="https://tang3n.github.io/portfolio/cs/">
     <link rel="alternate" hreflang="x-default" href="https://tang3n.github.io/portfolio/">
     <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Apply a saved theme before the stylesheet paints (no flash) -->
+    <script>try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
     <link rel="stylesheet" href="styles.css">
+    <script src="theme.js" defer></script>
     <script type="application/ld+json">
 {
         "@context": "https://schema.org",
@@ -88,7 +91,9 @@
                 <a class="section-link" href="#about">About</a>
                 <a class="section-link" href="#experience">Experience</a>
                 <a class="section-link" href="#contact">Contact</a>
+                <a class="world-link" href="world/">3D</a>
                 <a class="lang" href="cs/" hreflang="cs" lang="cs">CS</a>
+                <button class="theme" id="theme" type="button" data-labels='{"system":"Theme: system","light":"Theme: light","dark":"Theme: dark"}' hidden></button>
             </nav>
         </header>
 
@@ -104,8 +109,8 @@
                     <a href="mailto:stepan.meszaros@gmail.com">stepan.meszaros@gmail.com</a>
                     <a href="https://www.linkedin.com/in/%C5%A1t%C4%9Bp%C3%A1n-m%C3%A9sz%C3%A1ros-2b60b124b/"
                         target="_blank" rel="noopener">LinkedIn <span class="ext" aria-hidden="true">↗</span></a>
-                    <a href="world/">Explore in 3D <span class="ext" aria-hidden="true">→</span></a>
                 </div>
+                <p class="cta-row"><a class="cta" href="world/">Explore in 3D <span aria-hidden="true">→</span></a></p>
             </section>
 
             <section class="section" id="about">

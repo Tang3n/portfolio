@@ -56,8 +56,10 @@
     color-scheme: light;
 }
 
+/* Dark theme: follows the system unless the visitor picked a theme with the
+   switch in the header (data-theme on <html>, see theme.js). */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         --bg: #111113;
         --bg-blur: rgb(17 17 19 / 0.8);
         --text: #ececee;
@@ -69,6 +71,19 @@
 
         color-scheme: dark;
     }
+}
+
+:root[data-theme="dark"] {
+    --bg: #111113;
+    --bg-blur: rgb(17 17 19 / 0.8);
+    --text: #ececee;
+    --muted: #a0a0a8;
+    --faint: #6b6b74;
+    --rule: #26262b;
+    --accent: #b49cfc;
+    --accent-soft: rgb(180 156 252 / 0.1);
+
+    color-scheme: dark;
 }
 
 /* Base ------------------------------------------------------------------ */
@@ -192,6 +207,60 @@ a:hover .ext {
 
 .lang:hover {
     border-color: var(--accent);
+}
+
+.theme {
+    font: inherit;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    font-variant-emoji: text;
+    color: inherit;
+    background: none;
+    padding: 0 0.4rem;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.theme:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Link to the 3D version: filled pill so it stands out from text links */
+.world-link,
+.cta {
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 999px;
+    font-weight: 600;
+    transition: filter 0.2s, transform 0.2s var(--ease);
+}
+
+.world-link:hover,
+.cta:hover {
+    color: var(--bg);
+    filter: brightness(1.12);
+}
+
+.world-link {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.6rem;
+}
+
+.cta-row {
+    margin-top: 1.5rem;
+}
+
+.cta {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.6rem 1.15rem;
+    font-size: 0.9375rem;
+}
+
+.cta:hover {
+    transform: translateY(-1px);
 }
 
 @media (max-width: 40rem) {
@@ -466,7 +535,7 @@ a:hover .ext {
         margin: 14mm 16mm;
     }
 
-    :root {
+    :root:root {
         --bg: #fff;
         --text: #000;
         --muted: #444;
@@ -491,6 +560,7 @@ a:hover .ext {
 
     .site-header,
     .site-footer,
+    .cta-row,
     #contact {
         display: none;
     }
