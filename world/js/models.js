@@ -706,6 +706,43 @@ export function radioMast() {
     return g;
 }
 
+// Ostrov Projekty (Aurora Tonight): malá observatoř s kupolí, dalekohled
+// ve štěrbině a fotoaparát na stativu namířený k severu.
+export function observatory() {
+    const g = new THREE.Group();
+    const WALL = 0xf4f1ea, STONE = 0x8b8f8a, DARK = 0x3a3f47;
+    g.add(cyl(2.7, 3.0, 0.6, 12, STONE, 0, 0.3, 0)); // sokl
+    g.add(cyl(2.3, 2.3, 2.6, 12, WALL, 0, 1.9, 0));  // válcová stěna
+    g.add(cyl(2.45, 2.45, 0.18, 12, DARK, 0, 3.25, 0)); // věnec pod kupolí
+    // kupole = polokoule; štěrbina je tmavý pás přes vrchol, natočený k severu (−Z)
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(2.35, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), mat(0xd9dde2));
+    g.add(at(dome, 0, 3.34, 0));
+    const slit = new THREE.Mesh(new THREE.SphereGeometry(2.4, 14, 8, -0.22 - Math.PI / 2, 0.44, 0.05, Math.PI / 2 - 0.05), mat(0x1c2430));
+    g.add(at(slit, 0, 3.34, 0));
+    // dalekohled vykukuje ze štěrbiny pod úhlem k obloze
+    const tube = cyl(0.32, 0.38, 3.2, 10, 0xe8e8ec, 0, 4.9, -1.2);
+    tube.rotation.x = -0.75;
+    g.add(tube);
+    g.add(cyl(0.36, 0.36, 0.2, 10, DARK, 0, 5.95, -2.25).rotateX(-0.75));
+    // dveře a okno do zálivu (+Z = k molu po natočení ostrova se neřeší, je to jen detail)
+    g.add(box(0.8, 1.5, 0.12, 0x243b53, 0, 1.35, 2.28));
+    g.add(box(1.2, 0.16, 0.5, STONE, 0, 0.68, 2.5));
+    // stativ s fotoaparátem na kraji plošiny
+    const TX = 3.4, TZ = -2.4;
+    for (let i = 0; i < 3; i++) {
+        const a = (i / 3) * Math.PI * 2;
+        g.add(beam(v3(TX + Math.cos(a) * 0.45, 0, TZ + Math.sin(a) * 0.45), v3(TX, 1.25, TZ), 0.06, DARK));
+    }
+    const camera = box(0.45, 0.32, 0.3, 0x1f1f24, TX, 1.42, TZ);
+    camera.rotation.x = 0.35;
+    g.add(camera);
+    g.add(cyl(0.11, 0.11, 0.3, 8, 0x1f1f24, TX, 1.52, TZ - 0.25).rotateX(Math.PI / 2 + 0.35));
+    // lavička vedle (čekání na záři)
+    g.add(box(1.6, 0.12, 0.45, 0x8a6a42, -3.4, 0.55, -1.6));
+    for (const dx of [-0.65, 0.65]) g.add(box(0.1, 0.5, 0.4, 0x6b4a2f, -3.4 + dx, 0.25, -1.6));
+    return g;
+}
+
 // Molo: vybíhá z počátku podél +X, paluba 0,95 nad hladinou.
 export function dock(length) {
     const g = new THREE.Group();

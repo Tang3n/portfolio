@@ -4,6 +4,18 @@
 const EMAIL = "stepan.meszaros@gmail.com";
 const LINKEDIN = "https://www.linkedin.com/in/%C5%A1t%C4%9Bp%C3%A1n-m%C3%A9sz%C3%A1ros-2b60b124b/";
 
+const AURORA = "https://tang3n.github.io/aurora-tonight/";
+const AURORA_SRC = "https://github.com/Tang3n/aurora-tonight";
+
+const project = (title, href, when, lede, what, tags, links) => `
+    <article class="entry">
+        <header><h3><a href="${href}" target="_blank" rel="noopener">${title}</a></h3><span class="when">${when}</span></header>
+        <p class="where">${lede}</p>
+        <p>${what}</p>
+        <ul class="tags">${tags.map((tag) => `<li>${tag}</li>`).join("")}</ul>
+        <p class="links">${links.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener">${label} ↗</a>`).join("")}</p>
+    </article>`;
+
 const entry = (title, when, where, what = "") => `
     <article class="entry">
         <header><h3>${title}</h3>${when ? `<span class="when">${when}</span>` : ""}</header>
@@ -74,6 +86,14 @@ export const content = {
                         "Backend development of smart-home software in the company's development team.") +
                     entry("IT Helpdesk", "2023 – 2024", "SŠ a VOŠ aplikované kybernetiky · part-time",
                         "Technical support for students and teachers, hardware and software troubleshooting."),
+            },
+            {
+                id: "projects",
+                title: "Projects",
+                html: project("Aurora Tonight", AURORA, "Nov 2026",
+                    "Should you go outside tonight to see the northern lights? One answer for your location, with the reasons one step below.",
+                    "Runs entirely in the browser with no backend. It combines NOAA space-weather data, MET Norway cloud forecasts and the position of the Sun and Moon into an hourly chance of seeing aurora by eye or with a camera. The model is checked against a winter of all-sky camera images from Kilpisjärvi, Finland.",
+                    ["TypeScript", "WebGL", "Vite", "Vitest"], [["Live", AURORA], ["Source", AURORA_SRC]]),
             },
             {
                 id: "education",
@@ -169,6 +189,14 @@ export const content = {
                         "Backendový vývoj softwaru pro chytré domácnosti ve vývojovém týmu firmy.") +
                     entry("IT helpdesk", "2023 – 2024", "SŠ a VOŠ aplikované kybernetiky · částečný úvazek",
                         "Technická podpora pro studenty a učitele, řešení HW a SW problémů."),
+            },
+            {
+                id: "projects",
+                title: "Projekty",
+                html: project("Aurora Tonight", AURORA, "11/2026",
+                    "Má smysl jít dnes v noci ven na polární záři? Jedna odpověď pro zvolené místo, důvody o úroveň níž.",
+                    "Běží celá v prohlížeči bez backendu. Spojuje data o kosmickém počasí z NOAA, předpověď oblačnosti z MET Norway a polohu Slunce a Měsíce do hodinové šance, že záři uvidíš okem nebo fotoaparátem. Model je ověřený na zimě snímků z celooblohové kamery v Kilpisjärvi ve Finsku.",
+                    ["TypeScript", "WebGL", "Vite", "Vitest"], [["Živě", AURORA], ["Zdrojový kód", AURORA_SRC]]),
             },
             {
                 id: "education",

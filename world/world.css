@@ -749,3 +749,27 @@ h3.sub {
         animation: none;
     }
 }
+
+/* Projekty: štítky technologií a odkazy pod popisem */
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tags li {
+    padding: 0.05rem 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 0.75rem;
+}
+
+.entry p.links {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.6rem;
+}

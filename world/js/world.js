@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import {
     bake, mat, wind, jitter, rock, pine, bush, dock, islandMesh, mountainMesh, ISLAND_TOP,
-    lighthouse, smartHome, school, containers, radioMast, preikestolen, kjerag,
+    lighthouse, smartHome, school, containers, radioMast, observatory, preikestolen, kjerag,
 } from "./models.js";
 
 // Statický svět: ostrovy se sekcemi, hory kolem fjordu, skály, racci. Vrací
@@ -28,6 +28,7 @@ function rng(seed) {
 const ISLANDS = [
     { id: "about",      x: -36, z: -34, r: 13, build: lighthouse },
     { id: "experience", x:  40, z: -44, r: 14, build: smartHome },
+    { id: "projects",   x:   6, z: -82, r: 12, build: observatory },
     { id: "education",  x:  64, z:  18, r: 14, build: school },
     { id: "skills",     x: -60, z:  24, r: 13, build: containers },
     { id: "contact",    x:   2, z:  62, r: 11, build: radioMast },
@@ -334,6 +335,7 @@ export function createWorld(sections, { calm = false } = {}) {
         label.position.set(sight.x, 31, sight.z);
         group.add(label);
     }
+
 
     group.add(buildMountains(random, colliders));
     group.add(buildRocks(random, colliders));
